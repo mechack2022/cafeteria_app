@@ -13,7 +13,7 @@ import java.io.Serializable;
 
 
 //@NamedQuery(name="User.getAllUser", query="SELECT NEW com.fragile.cafe_backend.wrapper.UserWrapper(u.id, u.name, u.contactNumber, u.email, u.status) FROM User u WHERE u.role='user'")
-
+//@NamedQuery(name="User.updateUserStatus", query="update User u set u.status=:status where u.id=:id ")
 @Table(name="users")
 @RequiredArgsConstructor
 @DynamicInsert

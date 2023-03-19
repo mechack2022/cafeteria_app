@@ -18,10 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -113,6 +110,28 @@ public class UserServiceIplm implements UserService {
             ex.printStackTrace();
         }
         return new ResponseEntity<>(new ArrayList<>(), HttpStatus.BAD_REQUEST);
+    }
+
+//    admin update user status to true
+    @Override
+    public ResponseEntity<String> updateUserStatus(Map<String, String> requestMap) {
+        log.info("Inside updateUserStatus");
+        try{
+            if(jwtAuthenticationFilter.isAdmin()){
+                Optional<User> user = userRepo.findById(Integer.parseInt(requestMap.get("id")));
+                if(user.isPresent()){
+                    userRepo.updateUserStatus(requestMap.get("status"),Integer.parseInt(requestMap.get("id")));
+                    return CafeUtils.getResponseEntity("User status successfully updated", HttpStatus.OK);
+                }else {
+                    return CafeUtils.getResponseEntity("User id does not exist", HttpStatus.OK);
+                }
+            }else{
+                return CafeUtils.getResponseEntity(Constant.UNAUTHORISE_ACCESS, HttpStatus.UNAUTHORIZED);
+            }
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity(Constant.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

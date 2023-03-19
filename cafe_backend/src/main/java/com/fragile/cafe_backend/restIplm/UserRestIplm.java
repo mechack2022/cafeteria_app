@@ -50,4 +50,14 @@ public class UserRestIplm  implements UserRest {
         return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<String> updateUserStatus(Map<String, String> requestMap) {
+        try{
+            return userService.updateUserStatus(requestMap);
+        }catch(Exception ex) {
+            ex.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity(Constant.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 }
