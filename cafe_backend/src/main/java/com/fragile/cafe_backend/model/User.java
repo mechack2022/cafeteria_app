@@ -10,6 +10,10 @@ import org.hibernate.annotations.DynamicUpdate;
 import java.io.Serial;
 import java.io.Serializable;
 
+
+
+//@NamedQuery(name="User.getAllUser", query="SELECT NEW com.fragile.cafe_backend.wrapper.UserWrapper(u.id, u.name, u.contactNumber, u.email, u.status) FROM User u WHERE u.role='user'")
+
 @Table(name="users")
 @RequiredArgsConstructor
 @DynamicInsert

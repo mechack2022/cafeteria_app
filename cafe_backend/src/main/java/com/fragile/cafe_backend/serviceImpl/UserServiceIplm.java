@@ -3,10 +3,12 @@ package com.fragile.cafe_backend.serviceImpl;
 import com.fragile.cafe_backend.constant.Constant;
 import com.fragile.cafe_backend.dao.UserRepo;
 import com.fragile.cafe_backend.jwt.CustomUserDetailService;
+import com.fragile.cafe_backend.jwt.JwtAuthenticationFilter;
 import com.fragile.cafe_backend.jwt.JwtUtils;
 import com.fragile.cafe_backend.model.User;
 import com.fragile.cafe_backend.services.UserService;
 import com.fragile.cafe_backend.utils.CafeUtils;
+import com.fragile.cafe_backend.wrapper.UserWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -31,6 +35,8 @@ public class UserServiceIplm implements UserService {
     private final CustomUserDetailService customUserDetailService;
 
     private final JwtUtils jwtUtils;
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Override
     public ResponseEntity<String> signUp(Map<String, String> requestMap) {
@@ -92,6 +98,21 @@ public class UserServiceIplm implements UserService {
             log.error("An error occurred while login", ex);
         }
         return CafeUtils.getResponseEntity("Bad credentials", HttpStatus.BAD_REQUEST);
+    }
+
+    //get all users
+    @Override
+    public ResponseEntity<List<UserWrapper>> getAllUsers() {
+        try{
+            if(jwtAuthenticationFilter.isAdmin()){
+               return new ResponseEntity<>(userRepo.findAllUsers(), HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>(new ArrayList<>(), HttpStatus.UNAUTHORIZED);
+            }
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.BAD_REQUEST);
     }
 
 }
