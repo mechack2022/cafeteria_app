@@ -15,28 +15,27 @@ import java.util.List;
 
 @Repository
 public interface UserRepo extends JpaRepository<User, Integer> {
-     User findByEmail(String email);
+    User findByEmail(String email);
 
 //     List<UserWrapper> getAllUser();
 
-     /*The findAllUsers() method returns a list of UserWrapper objects
-     that are constructed using the specified fields from the User entity, filtered by the "user" role.*/
-     @Query("SELECT NEW com.fragile.cafe_backend.wrapper.UserWrapper(u.id, u.name, u.contactNumber, u.email, u.status) FROM User u WHERE u.role='user'")
-     List<UserWrapper> findAllUsers();
+    /*The findAllUsers() method returns a list of UserWrapper objects
+    that are constructed using the specified fields from the User entity, filtered by the "user" role.*/
+    @Query("SELECT NEW com.fragile.cafe_backend.wrapper.UserWrapper(u.id, u.name, u.contactNumber, u.email, u.status) FROM User u WHERE u.role='user'")
+    List<UserWrapper> findAllUsers();
 
-//     @Transactional
-//     @Modifying
-//     Integer updateUserStatus(String status, int id);
 
-//     @Transactional
+    //     @Transactional
 //     @Modifying
 //     @Query(nativeQuery = true, name = "User.updateUserStatus")
 //     void updateUserStatus(@Param("status") String status, @Param("id") Integer id);
-@Query("update User u set u.status = :status where u.id = :id")
-@Modifying
-@Transactional
-int updateUserStatus(@Param("status") String status, @Param("id") int id);
+    @Query("update User u set u.status = :status where u.id = :id")
+    @Modifying
+    @Transactional
+    int updateUserStatus(@Param("status") String status, @Param("id") int id);
 
+    @Query("select u.email from User u where u.role='admin' ")
+    List<String> getAllAdmin();
 
 }
 

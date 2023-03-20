@@ -8,9 +8,11 @@ import com.fragile.cafe_backend.jwt.JwtUtils;
 import com.fragile.cafe_backend.model.User;
 import com.fragile.cafe_backend.services.UserService;
 import com.fragile.cafe_backend.utils.CafeUtils;
+import com.fragile.cafe_backend.utils.EmailUtils;
 import com.fragile.cafe_backend.wrapper.UserWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,6 +36,9 @@ public class UserServiceIplm implements UserService {
     private final JwtUtils jwtUtils;
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+
+    private final EmailUtils emailUtils;
 
     @Override
     public ResponseEntity<String> signUp(Map<String, String> requestMap) {
@@ -100,38 +105,51 @@ public class UserServiceIplm implements UserService {
     //get all users
     @Override
     public ResponseEntity<List<UserWrapper>> getAllUsers() {
-        try{
-            if(jwtAuthenticationFilter.isAdmin()){
-               return new ResponseEntity<>(userRepo.findAllUsers(), HttpStatus.OK);
-            }else{
+        try {
+            if (jwtAuthenticationFilter.isAdmin()) {
+                return new ResponseEntity<>(userRepo.findAllUsers(), HttpStatus.OK);
+            } else {
                 return new ResponseEntity<>(new ArrayList<>(), HttpStatus.UNAUTHORIZED);
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return new ResponseEntity<>(new ArrayList<>(), HttpStatus.BAD_REQUEST);
     }
 
-//    admin update user status to true
+    //    admin update user status to true
     @Override
     public ResponseEntity<String> updateUserStatus(Map<String, String> requestMap) {
         log.info("Inside updateUserStatus");
-        try{
-            if(jwtAuthenticationFilter.isAdmin()){
+        try {
+            if (jwtAuthenticationFilter.isAdmin()) {
                 Optional<User> user = userRepo.findById(Integer.parseInt(requestMap.get("id")));
-                if(user.isPresent()){
-                    userRepo.updateUserStatus(requestMap.get("status"),Integer.parseInt(requestMap.get("id")));
+                if (user.isPresent()) {
+                    userRepo.updateUserStatus(requestMap.get("status"), Integer.parseInt(requestMap.get("id")));
+                    sendMailToAllAdmin(requestMap.get("status"), user.get().getEmail(), userRepo.getAllAdmin());
                     return CafeUtils.getResponseEntity("User status successfully updated", HttpStatus.OK);
-                }else {
+                } else {
                     return CafeUtils.getResponseEntity("User id does not exist", HttpStatus.OK);
                 }
-            }else{
+            } else {
                 return CafeUtils.getResponseEntity(Constant.UNAUTHORISE_ACCESS, HttpStatus.UNAUTHORIZED);
             }
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return CafeUtils.getResponseEntity(Constant.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private void sendMailToAllAdmin(String status, String user, List<String> allAdmin) {
+        allAdmin.remove(jwtAuthenticationFilter.getCurrentUser());  // not to send message to the current addmin
+        if (status != null && status.equalsIgnoreCase("true")) {
+            emailUtils.sendSimpleMail(jwtAuthenticationFilter.getCurrentUser(), "Account approved", "USER - " + user + " \n is approved by \nADMIN: - " +
+                    jwtAuthenticationFilter.getCurrentUser(), allAdmin);
+        }else{
+            emailUtils.sendSimpleMail(jwtAuthenticationFilter.getCurrentUser(), "Account disable", "USER - " + user + " \n is disable by \nADMIN: - " +
+                    jwtAuthenticationFilter.getCurrentUser(), allAdmin);
+        }
+
     }
 
 }
