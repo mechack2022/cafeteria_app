@@ -24,11 +24,6 @@ public interface UserRepo extends JpaRepository<User, Integer> {
     @Query("SELECT NEW com.fragile.cafe_backend.wrapper.UserWrapper(u.id, u.name, u.contactNumber, u.email, u.status) FROM User u WHERE u.role='user'")
     List<UserWrapper> findAllUsers();
 
-
-    //     @Transactional
-//     @Modifying
-//     @Query(nativeQuery = true, name = "User.updateUserStatus")
-//     void updateUserStatus(@Param("status") String status, @Param("id") Integer id);
     @Query("update User u set u.status = :status where u.id = :id")
     @Modifying
     @Transactional

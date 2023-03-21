@@ -1,9 +1,12 @@
 package com.fragile.cafe_backend.utils
         ;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +27,6 @@ public class EmailUtils {
         message.setTo(to);
 
 
-
         if (receivers.size() > 0)
             message.setCc(getCcArray(receivers));
         javaMailSender.send(message);
@@ -36,5 +38,17 @@ public class EmailUtils {
             cc[i] = receivers.get(i);
         }
         return cc;
+    }
+
+    public void passwordRecoveryMail(String to, String subject, String password) throws MessagingException {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+        mimeMessageHelper.setFrom("taiwogboyegun@gmail.com");
+        mimeMessageHelper.setTo(to);
+        mimeMessageHelper.setSubject(subject);
+
+        String htmlMsg = "<p><b>Your Login details for Fragile Cafe Management System</b><br><b>Email: </b> " + to + " <br><b>Password: </b> " + password + "<br><a href=\"http://localhost:4200/\">Click here to login</a></p>";
+        mimeMessage.setContent(htmlMsg, "text/html");
+        javaMailSender.send(mimeMessage);
     }
 }

@@ -14,7 +14,7 @@ import java.util.Map;
 public interface UserRest {
 
     @PostMapping("/signup")
-     ResponseEntity<String> signUp(@RequestBody Map<String, String> request);
+    ResponseEntity<String> signUp(@RequestBody Map<String, String> request);
 
     @PostMapping("/login")
     ResponseEntity<String> login(@RequestBody Map<String, String> requesMap);
@@ -25,5 +25,13 @@ public interface UserRest {
     @PostMapping("/updateUserStatus")
     ResponseEntity<String> updateUserStatus(@RequestBody Map<String, String> requestMap);
 
+    @GetMapping("/checkToken")
+    ResponseEntity<String> checkToken();
+
+    @PostMapping("/changePassword")
+    ResponseEntity<String> changePassword(@RequestBody Map<String, String> requestMap);
+
+    @PostMapping("/forgetPassword")
+    ResponseEntity<String> forgetPassword(@RequestBody Map<String, String> requestMap);
 
 }

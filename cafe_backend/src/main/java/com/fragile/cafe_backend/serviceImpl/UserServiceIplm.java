@@ -10,9 +10,9 @@ import com.fragile.cafe_backend.services.UserService;
 import com.fragile.cafe_backend.utils.CafeUtils;
 import com.fragile.cafe_backend.utils.EmailUtils;
 import com.fragile.cafe_backend.wrapper.UserWrapper;
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -140,16 +140,57 @@ public class UserServiceIplm implements UserService {
         return CafeUtils.getResponseEntity(Constant.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+
     private void sendMailToAllAdmin(String status, String user, List<String> allAdmin) {
         allAdmin.remove(jwtAuthenticationFilter.getCurrentUser());  // not to send message to the current addmin
         if (status != null && status.equalsIgnoreCase("true")) {
             emailUtils.sendSimpleMail(jwtAuthenticationFilter.getCurrentUser(), "Account approved", "USER - " + user + " \n is approved by \nADMIN: - " +
                     jwtAuthenticationFilter.getCurrentUser(), allAdmin);
-        }else{
+        } else {
             emailUtils.sendSimpleMail(jwtAuthenticationFilter.getCurrentUser(), "Account disable", "USER - " + user + " \n is disable by \nADMIN: - " +
                     jwtAuthenticationFilter.getCurrentUser(), allAdmin);
         }
 
+    }
+
+    //check token for validity
+    @Override
+    public ResponseEntity<String> checkToken() {
+        return CafeUtils.getResponseEntity("true", HttpStatus.OK);
+    }
+
+    // user change password
+    @Override
+    public ResponseEntity<String> changePassword(Map<String, String> requestMap) {
+        try {
+            User userObj = userRepo.findByEmail(jwtAuthenticationFilter.getCurrentUser());
+            if (userObj != null) {
+                if (userObj.getPassword().equals(requestMap.get("oldPassword"))) {
+                    userObj.setPassword(requestMap.get("newPassword"));
+                    userRepo.save(userObj);
+                    return CafeUtils.getResponseEntity("Password updated successfully", HttpStatus.OK);
+                }
+                return CafeUtils.getResponseEntity("Incorrect old password", HttpStatus.BAD_REQUEST);
+            }
+            return CafeUtils.getResponseEntity("User does not exist", HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity(Constant.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    //    forget password implementation
+    @Override
+    public ResponseEntity<String> forgetPassword(Map<String, String> requestMap) {
+        try {
+            User user = userRepo.findByEmail(requestMap.get("email"));
+            if (!Objects.isNull(user) && !Strings.isNullOrEmpty(user.getEmail()))
+                emailUtils.passwordRecoveryMail(user.getEmail(), "Fragile Cafeteria credential management Sytem", user.getPassword());
+            return CafeUtils.getResponseEntity("checked your mail for credential", HttpStatus.OK);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity(Constant.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }
