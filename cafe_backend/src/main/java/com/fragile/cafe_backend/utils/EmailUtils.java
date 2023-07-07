@@ -4,6 +4,7 @@ package com.fragile.cafe_backend.utils
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -19,9 +20,13 @@ public class EmailUtils {
 
     private final JavaMailSender javaMailSender;
 
+    @Value("${spring.mail.username")
+    private String sender;
+
+
     public void sendSimpleMail(String to, String subject, String text, List<String> receivers) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("taiwogboyegun@gmail.com");
+        message.setFrom(sender);
         message.setText(text);
         message.setSubject(subject);
         message.setTo(to);
@@ -43,7 +48,7 @@ public class EmailUtils {
     public void passwordRecoveryMail(String to, String subject, String password) throws MessagingException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
-        mimeMessageHelper.setFrom("taiwogboyegun@gmail.com");
+        mimeMessageHelper.setFrom(sender);
         mimeMessageHelper.setTo(to);
         mimeMessageHelper.setSubject(subject);
 

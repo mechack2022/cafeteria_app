@@ -11,21 +11,30 @@ import java.io.Serial;
 import java.io.Serializable;
 
 
-//@NamedQuery(name = "Category.getAllCategories", query = "SELECT c FROM Category c where c.id in (select p.category from Product p where p.Status ='true')")
-@Table(name = "categories")
+@Table(name = "products")
 @RequiredArgsConstructor
 @DynamicInsert
 @DynamicUpdate
 @Setter
 @Getter
 @Entity
-public class Category implements Serializable {
+public class Product implements Serializable {
 
     @Serial
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 123456L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY )
     private Integer id;
 
     private String name;
+
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "category_FK", nullable = false)
+    private Category category;
+
+    private String description;
+
+    private Integer price;
+
+    private String Status;
 }

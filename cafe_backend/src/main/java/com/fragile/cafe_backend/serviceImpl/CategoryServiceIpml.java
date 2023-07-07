@@ -7,6 +7,7 @@ import com.fragile.cafe_backend.model.Category;
 import com.fragile.cafe_backend.services.CategoryService;
 import com.fragile.cafe_backend.utils.CafeUtils;
 import com.google.common.base.Strings;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,16 +21,12 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-
+@RequiredArgsConstructor
 public class CategoryServiceIpml implements CategoryService {
+
     private final CategoryRepo categoryRepo;
 
-    public CategoryServiceIpml(CategoryRepo categoryRepo) {
-        this.categoryRepo = categoryRepo;
-    }
-
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     //ADD CATEGORY
     @Override
@@ -37,14 +34,12 @@ public class CategoryServiceIpml implements CategoryService {
         log.info("Inside addNew Category");
         try {
             if (jwtAuthenticationFilter.isAdmin()) {
-                log.info("admin now adding a new category");
                 if (validateCategory(requestMap, false)) {
                     categoryRepo.save(getCategory(requestMap, false));
-                    return CafeUtils.getResponseEntity("Category Added successfully", HttpStatus.OK);
+                    return CafeUtils.getResponseEntity("category added successfully", HttpStatus.OK);
                 }
-            } else {
-                return CafeUtils.getResponseEntity(Constant.UNAUTHORISE_ACCESS, HttpStatus.UNAUTHORIZED);
-            }
+                return CafeUtils.getResponseEntity(Constant.INVALID_DATA, HttpStatus.BAD_REQUEST);
+            } else return CafeUtils.getResponseEntity(Constant.UNAUTHORISE_ACCESS, HttpStatus.UNAUTHORIZED);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -121,7 +116,7 @@ public class CategoryServiceIpml implements CategoryService {
             log.info("Before admin inside update category");
             if (!jwtAuthenticationFilter.isAdmin()) {
                 log.warn("Unauthorized access to update category");
-                return CafeUtils.getResponseEntity(Constant.UNAUTHORISE_ACCESS , HttpStatus.UNAUTHORIZED);
+                return CafeUtils.getResponseEntity(Constant.UNAUTHORISE_ACCESS, HttpStatus.UNAUTHORIZED);
             }
 
             if (!validateCategory(requestMap, true)) {

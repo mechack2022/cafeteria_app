@@ -185,7 +185,7 @@ public class UserServiceIplm implements UserService {
         try {
             User user = userRepo.findByEmail(requestMap.get("email"));
             if (!Objects.isNull(user) && !Strings.isNullOrEmpty(user.getEmail()))
-                emailUtils.passwordRecoveryMail(user.getEmail(), "Fragile Cafeteria credential management Sytem", user.getPassword());
+                emailUtils.passwordRecoveryMail(user.getEmail(), "Fragile Cafeteria credential management System", user.getPassword());
             return CafeUtils.getResponseEntity("checked your mail for credential", HttpStatus.OK);
         } catch (Exception ex) {
             ex.printStackTrace();
