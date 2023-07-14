@@ -11,7 +11,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 
-//@NamedQuery(name = "Category.getAllCategories", query = "SELECT c FROM Category c where c.id in (select p.category from Product p where p.Status ='true')")
+@NamedQuery(name = "Category.getAllCategories", query = "SELECT c FROM Category c where c.id in (select p.category from Product p where p.status ='true')")
 @Table(name = "categories")
 @RequiredArgsConstructor
 @DynamicInsert

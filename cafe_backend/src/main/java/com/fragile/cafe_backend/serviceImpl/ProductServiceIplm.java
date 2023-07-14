@@ -7,13 +7,17 @@ import com.fragile.cafe_backend.model.Category;
 import com.fragile.cafe_backend.model.Product;
 import com.fragile.cafe_backend.services.ProductService;
 import com.fragile.cafe_backend.utils.CafeUtils;
+import com.fragile.cafe_backend.wrapper.ProductWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -38,6 +42,42 @@ public class ProductServiceIplm implements ProductService {
             ex.printStackTrace();
         }
         return CafeUtils.getResponseEntity(Constant.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<ProductWrapper>> getAllProduct() {
+        try {
+            return new ResponseEntity<>(productRepo.getAllProduct(), HttpStatus.OK);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> updateProduct(Map<String, String> requestMap) {
+        try {
+            if (jwtFilter.isAdmin()) {
+                if (validateProduct(requestMap, true)) {
+                    Optional<Product> foundProduct = productRepo.findById(Integer.parseInt(requestMap.get("id")));
+                    if (foundProduct.isPresent()) {
+                        Product newProduct = getProductFromMap(requestMap, true);
+                        newProduct.setStatus(foundProduct.get().getStatus());
+                        productRepo.save(newProduct);
+                        return CafeUtils.getResponseEntity("Product updated successfully", HttpStatus.OK);
+                    } else {
+                        return CafeUtils.getResponseEntity("Product id not found", HttpStatus.BAD_REQUEST);
+                    }
+                } else {
+                    return CafeUtils.getResponseEntity(Constant.INVALID_DATA, HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return CafeUtils.getResponseEntity(Constant.UNAUTHORISE_ACCESS, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return new ResponseEntity<>(Constant.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private boolean validateProduct(Map<String, String> requestMap, boolean validateId) {

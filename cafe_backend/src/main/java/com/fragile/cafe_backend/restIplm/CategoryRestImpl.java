@@ -21,14 +21,25 @@ public class CategoryRestImpl implements CategoryRest {
 
     private final CategoryService categoryService;
 
+//    @Override
+//    public ResponseEntity<String> addNewCategory(Map<String, String> requestMap) {
+//        try{
+//            categoryService.addNewCategory(requestMap);
+//        }catch (Exception ex){
+//            ex.printStackTrace();
+//        }
+//        return CafeUtils.getResponseEntity(Constant.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
+
     @Override
     public ResponseEntity<String> addNewCategory(Map<String, String> requestMap) {
-        try{
+        try {
             categoryService.addNewCategory(requestMap);
-        }catch (Exception ex){
+            return CafeUtils.getResponseEntity("Category added successfully", HttpStatus.OK);
+        } catch (Exception ex) {
             ex.printStackTrace();
+            return CafeUtils.getResponseEntity(Constant.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return CafeUtils.getResponseEntity(Constant.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override

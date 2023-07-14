@@ -5,11 +5,16 @@ import com.fragile.cafe_backend.model.Category;
 import com.fragile.cafe_backend.rest.ProductRest;
 import com.fragile.cafe_backend.services.ProductService;
 import com.fragile.cafe_backend.utils.CafeUtils;
+import com.fragile.cafe_backend.wrapper.ProductWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -26,4 +31,26 @@ public class ProductRestImplementation implements ProductRest {
         }
         return CafeUtils.getResponseEntity(Constant.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<List<ProductWrapper>> getAllProduct() {
+        try {
+            return productService.getAllProduct();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> updateProduct(Map<String, String> mapRequest) {
+        try{
+            return productService.updateProduct(mapRequest);
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity(Constant.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
 }

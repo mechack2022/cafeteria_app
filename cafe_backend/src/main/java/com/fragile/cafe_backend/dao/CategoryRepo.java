@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface CategoryRepo extends JpaRepository<Category, String> {
+public interface CategoryRepo extends JpaRepository<Category, Integer> {
     //    @Query("select c from Category c")
     /*
     The query selects all categories (SELECT c FROM Category c) whose id is
@@ -16,7 +16,7 @@ public interface CategoryRepo extends JpaRepository<Category, String> {
     (IN (SELECT p.category.id FROM Product p)) with Status equal to "true"
     (WHERE p.status = 'true'). The result is returned as a List<Category>
     */
-    @Query("SELECT c FROM Category c WHERE c.id IN (SELECT p.category.id FROM Product p WHERE p.Status = 'true')")
+//    @Query("SELECT c FROM Category c WHERE c.id IN (SELECT p.category FROM Product p WHERE p.Status = 'true')")
     List<Category> getAllCategories();
 
 }
