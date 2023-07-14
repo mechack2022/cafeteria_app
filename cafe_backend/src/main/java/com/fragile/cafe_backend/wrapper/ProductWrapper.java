@@ -5,8 +5,6 @@ import lombok.*;
 @Setter
 @Getter
 @NoArgsConstructor
-//@AllArgsConstructor
-//@RequiredArgsConstructor
 public class ProductWrapper {
     private Integer id;
 
@@ -23,7 +21,7 @@ public class ProductWrapper {
     private String categoryName;
 
 
-    public ProductWrapper(Integer id, String name, String status, String description, Integer price, Integer categoryId, String categoryName){
+    public ProductWrapper(Integer id, String name, String status, String description, Integer price, Integer categoryId, String categoryName) {
         this.id = id;
         this.name = name;
         this.status = status;
@@ -31,7 +29,19 @@ public class ProductWrapper {
         this.price = price;
         this.categoryId = categoryId;
         this.categoryName = categoryName;
+    }
 
+    public ProductWrapper(Integer id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public ProductWrapper(Integer id, String name, String description, Integer price, String categoryName){
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.categoryName = categoryName;
     }
 
 

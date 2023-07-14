@@ -22,11 +22,12 @@ import java.util.Map;
 public class ProductRestImplementation implements ProductRest {
 
     private final ProductService productService;
+
     @Override
     public ResponseEntity<String> addProduct(Map<String, String> mapRequest) {
-        try{
-           return productService.addProduct(mapRequest);
-        }catch(Exception ex){
+        try {
+            return productService.addProduct(mapRequest);
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return CafeUtils.getResponseEntity(Constant.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -44,12 +45,52 @@ public class ProductRestImplementation implements ProductRest {
 
     @Override
     public ResponseEntity<String> updateProduct(Map<String, String> mapRequest) {
-        try{
+        try {
             return productService.updateProduct(mapRequest);
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return CafeUtils.getResponseEntity(Constant.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> deleteProduct(Integer id) {
+        try {
+            return productService.deleteProduct(id);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return CafeUtils.getResponseEntity(Constant.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> updateProductStatus(Map<String, String> requestMap) {
+        try {
+            return productService.updateProductStatus(requestMap);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return CafeUtils.getResponseEntity(Constant.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public ResponseEntity<List<ProductWrapper>> getProductByCategory(Integer categoryId) {
+        try {
+            return productService.getProductByCategory(categoryId);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public ResponseEntity<ProductWrapper> getProductById(Integer categoryId) {
+        try {
+            return productService.findProductById(categoryId);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>(new ProductWrapper(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 

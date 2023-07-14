@@ -12,4 +12,12 @@ public interface ProductService {
     ResponseEntity<List<ProductWrapper>> getAllProduct();
 
     ResponseEntity<String> updateProduct(Map<String, String> requestMap);
+
+    ResponseEntity<String> deleteProduct(Integer id);
+
+    ResponseEntity<String> updateProductStatus(Map<String, String> requestMap);
+
+    ResponseEntity<List<ProductWrapper>> getProductByCategory(Integer categoryId);
+
+    ResponseEntity<ProductWrapper> findProductById(Integer productId);
 }
